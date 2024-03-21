@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetings-project
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: greetings-project
+  template:
+    metadata:
+      labels:
+        app: greetings-project
+    spec:
+      containers:
+      - name: greetings-project
+        image: abqari63/greetings:latest
+        ports:
+        - containerPort: 3000
