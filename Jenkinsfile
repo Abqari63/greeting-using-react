@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        dockerimagename = "abqari63/greetings-project"
+        dockerImageName = "abqari63/greetings-project" // Corrected variable name
     }
 
     agent any
@@ -15,7 +15,7 @@ pipeline {
         stage('Build image') {
             steps {
                 script {
-                    dockerImage = docker.build dockerimagename
+                    dockerImage = docker.build dockerImageName // Corrected variable name
                 }
             }
         }
@@ -26,7 +26,9 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/', registryCredential)
+                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+                        dockerImage.push() // Push the built Docker image to Docker Hub
+                    }
                 }
             }
         }
@@ -34,7 +36,9 @@ pipeline {
         stage('Deploying App to Kubernetes') {
             steps {
                 script {
+                    // Deploy the application to Kubernetes using the kubeconfig stored in Jenkins
                     kubernetesDeploy(configs: './kubernetes/greetings-deployment.yaml', kubeconfigId: 'kubeconfig')
+                    kubernetesDeploy(configs: './kubernetes/greetings-service.yaml', kubeconfigId: 'kubeconfig')
                 }
             }
         }
